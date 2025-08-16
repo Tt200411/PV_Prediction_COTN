@@ -84,10 +84,17 @@ ipython_config.py
 *.parquet
 
 # Plots and images (optional - you may want to keep these)
-*.png
-*.jpg
-*.jpeg
-*.pdf
+# *.png
+# *.jpg
+# *.jpeg
+# *.pdf
+COTN/*.png
+COTN/*.jpg
+COTN/*.jpeg
+COTN/*.pdf
+COTN/*.csv
+COTN/*.json
+COTN/*.parquet
 
 # IDEs
 .vscode/
@@ -110,3 +117,5 @@ ipython_config.py
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+.npy
