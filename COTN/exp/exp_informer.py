@@ -73,6 +73,7 @@ class Exp_Informer(Exp_Basic):
             'ECL':Dataset_Custom,
             'Solar':Dataset_Custom,
             'custom':Dataset_Custom,
+            'PV_Solar_Station_1':Dataset_Custom,  # 光伏数据集映射
         }
         Data = data_dict[self.config.data]
         timeenc = 0 if args.embed!='timeF' else 1

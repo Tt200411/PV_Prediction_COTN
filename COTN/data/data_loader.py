@@ -230,13 +230,17 @@ class Dataset_Custom(Dataset):
             cols = list(df_raw.columns); cols.remove(self.target); cols.remove('date')
         df_raw = df_raw[['date']+cols+[self.target]]
 
-        num_train = int(len(df_raw)*0.7)
-        num_test = int(len(df_raw)*0.2)
-        num_vali = len(df_raw) - num_train - num_test
-        border1s = [0, num_train-self.seq_len, len(df_raw)-num_test-self.seq_len]
-        border2s = [num_train, num_train+num_vali, len(df_raw)]
-        border1 = border1s[self.set_type]
-        border2 = border2s[self.set_type]
+        # 严格的时间序列分割：前80%训练，后20%测试（防止数据泄露）
+        num_train = int(len(df_raw) * 0.8)  # 80%用于训练
+        
+        # 边界设置：确保严格的时间顺序 (不使用验证集)
+        if self.set_type == 0:  # train
+            border1, border2 = 0, num_train
+        elif self.set_type == 1:  # val (使用训练集的最后部分作为验证)
+            val_size = min(5000, num_train // 10)  # 验证集大小
+            border1, border2 = num_train - val_size, num_train
+        else:  # test
+            border1, border2 = num_train, len(df_raw)
         
         if self.features=='M' or self.features=='MS':
             cols_data = df_raw.columns[1:]
@@ -245,7 +249,9 @@ class Dataset_Custom(Dataset):
             df_data = df_raw[[self.target]]
 
         if self.scale:
-            train_data = df_data[border1s[0]:border2s[0]]
+            # 始终使用完整训练集来拟合scaler
+            train_border2 = int(len(df_raw) * 0.8)
+            train_data = df_data[0:train_border2]
             self.scaler.fit(train_data.values)
             data = self.scaler.transform(df_data.values)
         else:

@@ -1,14 +1,14 @@
 class InformerConfig:
     def __init__(self):
-        # 数据参数
-        self.seq_len = 96  # 输入序列长度
-        self.label_len = 48  # 解码器开始令牌长度
-        self.pred_len = 24  # 预测序列长度
+        # 数据参数 - 光伏预测优化 (调整后适合数据大小)
+        self.seq_len = 96   # 输入序列长度：1天 (96个15分钟 = 24小时)
+        self.label_len = 48  # 解码器开始令牌长度：12小时 (48个15分钟)
+        self.pred_len = 24   # 预测序列长度：6小时 (24个15分钟)
         
-        # 模型参数
-        self.enc_in = 7  # 编码器输入大小
-        self.dec_in = 7  # 解码器输入大小
-        self.c_out = 7  # 输出大小
+        # 模型参数 - 光伏数据适配（单变量预测）
+        self.enc_in = 1  # 编码器输入大小：单变量功率预测
+        self.dec_in = 1  # 解码器输入大小
+        self.c_out = 1  # 输出大小：单变量功率预测
         self.d_model = 512  # 模型维度
         self.n_heads = 8  # 注意力头数
         self.e_layers = 2  # 编码器层数
@@ -50,13 +50,17 @@ class InformerConfig:
         self.gpu = 0
         self.devices = '0'  # GPU设备ID
 
-        # 数据集参数
+        # 数据集参数 - 光伏数据配置
         self.root_path = 'ETT-small'
-        self.data = 'ETTh1'                # 默认数据集
+        self.data = 'PV_Solar_Station_1'                # 光伏数据集
         self.data_path = f'{self.data}.csv' # 动态生成路径
-        self.features = 'M'  # 预测任务类型
-        self.target = 'OT'  # 目标特征
+        self.features = 'S'  # 预测任务类型：单变量预测功率
+        self.target = 'Power'  # 目标特征：发电功率
         self.inverse = False  # 是否反转输出数据
+        
+        # 时间特征编码 - 15分钟间隔
+        self.freq = 't'  # 时间特征编码频率：分钟级 (timefeatures支持的格式)
+        self.detail_freq = 't'  # 预测时的频率
         
         # 激活函数参数
         self.activation = 'Lee'  # 激活函数类型：'gelu', 'relu', 'lee'
