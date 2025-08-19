@@ -29,9 +29,9 @@ class Dataset_PV(Dataset):
             self.label_len = size[1]
             self.pred_len = size[2]
         
-        # 验证flag
-        assert flag in ['train', 'test', 'val']
-        type_map = {'train':0, 'val':1, 'test':2}
+        # 验证flag - 添加pred支持
+        assert flag in ['train', 'test', 'val', 'pred']
+        type_map = {'train':0, 'val':1, 'test':2, 'pred':2}  # pred使用test的分割
         self.set_type = type_map[flag]
         
         self.features = features
@@ -153,9 +153,9 @@ class Dataset_ETT_hour(Dataset):
             self.seq_len = size[0]
             self.label_len = size[1]
             self.pred_len = size[2]
-        # init
-        assert flag in ['train', 'test', 'val']
-        type_map = {'train':0, 'val':1, 'test':2}
+        # init - 添加pred支持
+        assert flag in ['train', 'test', 'val', 'pred']
+        type_map = {'train':0, 'val':1, 'test':2, 'pred':2}  # pred使用test的分割
         self.set_type = type_map[flag]
         
         self.features = features
