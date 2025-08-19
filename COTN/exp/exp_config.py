@@ -3,7 +3,7 @@ class InformerConfig:
         # 数据参数 - 光伏预测优化 (调整后适合数据大小)
         self.seq_len = 96   # 输入序列长度：1天 (96个15分钟 = 24小时)
         self.label_len = 48  # 解码器开始令牌长度：12小时 (48个15分钟)
-        self.pred_len = 24   # 预测序列长度：6小时 (24个15分钟)
+        self.pred_len = 100   # 预测序列长度：100个时间步 (25小时)
         
         # 模型参数 - 光伏数据适配（单变量预测）
         self.enc_in = 1  # 编码器输入大小：单变量功率预测
@@ -66,5 +66,14 @@ class InformerConfig:
         self.activation = 'Lee'  # 激活函数类型：'gelu', 'relu', 'lee'
         self.lee_oscillator = True  # 是否使用Lee振荡器作为激活函数
         self.lee_type = 3  # 使用第几类Lee振荡器 (1-8)
+        self.use_relu = False  # 是否使用ReLU激活函数
+        
+        # 训练/测试分离控制
+        self.train_only = False  # 仅训练模式
+        self.test_only = False   # 仅测试模式
+        self.train_and_test = True  # 训练+测试模式
+        
+        # 文件命名参数
+        self.include_pred_len_in_filename = True  # 文件名包含预测步长
         
         # 其他参数保持不变 ... 
