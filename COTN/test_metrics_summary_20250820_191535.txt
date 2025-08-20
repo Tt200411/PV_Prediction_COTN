@@ -1,0 +1,94 @@
+================================================================================
+COTN Solar Power Prediction - Test Results Summary
+================================================================================
+Generated: 2025-08-20 19:15:35
+Total Datasets Tested: 8
+================================================================================
+
+Dataset: informer_Site_1_50MW_lee3_pred100
+------------------------------------------------------------
+📊 Basic Metrics:
+   MAE (Mean Absolute Error):           0.228912
+   MSE (Mean Squared Error):            0.200756
+   RMSE (Root Mean Squared Error):      0.448058
+   MAPE (Mean Absolute Percentage Error): 2.364695
+   MSPE (Mean Squared Percentage Error):  3904.656738
+
+Dataset: informer_Site_2_130MW_lee3_pred100
+------------------------------------------------------------
+📊 Basic Metrics:
+   MAE (Mean Absolute Error):           0.242153
+   MSE (Mean Squared Error):            0.182750
+   RMSE (Root Mean Squared Error):      0.427493
+   MAPE (Mean Absolute Percentage Error): 1.431522
+   MSPE (Mean Squared Percentage Error):  728.470703
+
+Dataset: informer_Site_3_30MW_lee3_pred100
+------------------------------------------------------------
+📊 Basic Metrics:
+   MAE (Mean Absolute Error):           0.349609
+   MSE (Mean Squared Error):            0.325405
+   RMSE (Root Mean Squared Error):      0.570443
+   MAPE (Mean Absolute Percentage Error): 1.710051
+   MSPE (Mean Squared Percentage Error):  118.790993
+
+Dataset: informer_Site_4_130MW_lee3_pred100
+------------------------------------------------------------
+📊 Basic Metrics:
+   MAE (Mean Absolute Error):           nan
+   MSE (Mean Squared Error):            nan
+   RMSE (Root Mean Squared Error):      nan
+   MAPE (Mean Absolute Percentage Error): nan
+   MSPE (Mean Squared Percentage Error):  nan
+
+Dataset: informer_Site_5_110MW_lee3_pred100
+------------------------------------------------------------
+📊 Basic Metrics:
+   MAE (Mean Absolute Error):           0.256486
+   MSE (Mean Squared Error):            0.296246
+   RMSE (Root Mean Squared Error):      0.544285
+   MAPE (Mean Absolute Percentage Error): 1.448545
+   MSPE (Mean Squared Percentage Error):  911.359192
+
+Dataset: informer_Site_6_35MW_lee3_pred100
+------------------------------------------------------------
+📊 Basic Metrics:
+   MAE (Mean Absolute Error):           0.184004
+   MSE (Mean Squared Error):            0.123731
+   RMSE (Root Mean Squared Error):      0.351755
+   MAPE (Mean Absolute Percentage Error): 0.919409
+   MSPE (Mean Squared Percentage Error):  213.665619
+
+Dataset: informer_Site_7_30MW_lee3_pred100
+------------------------------------------------------------
+📊 Basic Metrics:
+   MAE (Mean Absolute Error):           0.214378
+   MSE (Mean Squared Error):            0.166303
+   RMSE (Root Mean Squared Error):      0.407803
+   MAPE (Mean Absolute Percentage Error): 0.897188
+   MSPE (Mean Squared Percentage Error):  63.868797
+
+Dataset: informer_Site_8_30MW_lee3_pred100
+------------------------------------------------------------
+📊 Basic Metrics:
+   MAE (Mean Absolute Error):           0.250785
+   MSE (Mean Squared Error):            0.214574
+   RMSE (Root Mean Squared Error):      0.463221
+   MAPE (Mean Absolute Percentage Error): 2.478793
+   MSPE (Mean Squared Percentage Error):  12078.727539
+
+================================================================================
+OVERALL SUMMARY STATISTICS
+================================================================================
+Average Performance Across 8 Datasets:
+--------------------------------------------------
+   MAE                                      :      nan ± nan
+   MSE                                      :      nan ± nan
+   RMSE                                     :      nan ± nan
+   MAPE                                     :      nan% ± nan%
+   MSPE                                     :      nan ± nan
+
+Best/Worst Performance (by MAE):
+-----------------------------------
+   Best:  informer_Site_6_35MW_lee3_pred100 (MAE: 0.184004)
+   Worst: informer_Site_3_30MW_lee3_pred100 (MAE: 0.349609)

@@ -187,46 +187,145 @@ class Exp_Informer(Exp_Basic):
         return self.model
 
     def test(self, setting):
-        test_data, test_loader = self._get_data(flag='test')
+        """
+        Enhanced test function with comprehensive metrics and visualization
+        Loads the best checkpoint and generates detailed results
+        """
+        # Load the best model checkpoint
+        path = os.path.join(self.config.checkpoints, setting)
+        best_model_path = path + '/' + 'checkpoint.pth'
         
+        if not os.path.exists(best_model_path):
+            print(f"❌ Checkpoint not found: {best_model_path}")
+            print("Please train the model first or check the setting name.")
+            return None
+            
+        print(f"📁 Loading checkpoint from: {best_model_path}")
+        self.model.load_state_dict(torch.load(best_model_path, map_location=self.device))
+        
+        test_data, test_loader = self._get_data(flag='test')
         self.model.eval()
         
         preds = []
         trues = []
         
-        for i, (batch_x,batch_y,batch_x_mark,batch_y_mark) in enumerate(test_loader):
-            pred, true = self._process_one_batch(
-                test_data, batch_x, batch_y, batch_x_mark, batch_y_mark)
-            preds.append(pred.detach().cpu().numpy())
-            trues.append(true.detach().cpu().numpy())
+        print(f"🧪 Running test inference...")
+        with torch.no_grad():
+            for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(test_loader):
+                pred, true = self._process_one_batch(
+                    test_data, batch_x, batch_y, batch_x_mark, batch_y_mark)
+                preds.append(pred.detach().cpu().numpy())
+                trues.append(true.detach().cpu().numpy())
+                
+                if (i + 1) % 100 == 0:
+                    print(f"  Processed {i+1}/{len(test_loader)} batches")
 
         preds = np.array(preds)
         trues = np.array(trues)
-        print('test shape:', preds.shape, trues.shape)
+        print('Raw test shape:', preds.shape, trues.shape)
+        
         preds = preds.reshape(-1, preds.shape[-2], preds.shape[-1])
         trues = trues.reshape(-1, trues.shape[-2], trues.shape[-1])
-        print('test shape:', preds.shape, trues.shape)
+        print('Reshaped test shape:', preds.shape, trues.shape)
 
-        # result save
-        base_folder = './results/' + setting
+        # Calculate basic metrics (for backward compatibility)
+        mae, mse, rmse, mape, mspe = metric(preds, trues)
+        print(f"📊 Basic Metrics:")
+        print(f"   MAE: {mae:.6f}")
+        print(f"   MSE: {mse:.6f}")  
+        print(f"   RMSE: {rmse:.6f}")
+        print(f"   MAPE: {mape:.6f}")
+        print(f"   MSPE: {mspe:.6f}")
+
+        # Calculate comprehensive metrics
+        from utils.metrics import comprehensive_metrics
+        comp_metrics = comprehensive_metrics(preds, trues)
+        print(f"\n📊 Comprehensive Metrics:")
+        for metric_name, value in comp_metrics.items():
+            # Convert numpy arrays to scalar values with better handling
+            try:
+                if isinstance(value, np.ndarray):
+                    if value.size == 1:
+                        value = float(value.item())
+                    else:
+                        value = float(np.mean(value))
+                elif hasattr(value, 'item'):
+                    value = float(value.item())
+                else:
+                    value = float(value)
+            except (ValueError, TypeError):
+                value = float(np.mean(np.array(value).flatten()))
+                
+            if metric_name in ['MAPE', 'SMAPE', 'WAPE']:
+                print(f"   {metric_name}: {value:.4f}%")
+            else:
+                print(f"   {metric_name}: {value:.6f}")
+
+        # Create results directory
+        base_folder = './test_results/' + setting
         folder_path = base_folder + '/'
         counter = 1
         
-        # 如果文件夹存在，创建一个新的编号版本
+        # Create unique folder if exists
         while os.path.exists(folder_path):
-            folder_path = f"{base_folder}{counter}/"
+            folder_path = f"{base_folder}_run{counter}/"
             counter += 1
             
-        os.makedirs(folder_path)
+        os.makedirs(folder_path, exist_ok=True)
+        print(f"📂 Results will be saved to: {folder_path}")
 
-        mae, mse, rmse, mape, mspe = metric(preds, trues)
-        print('mse:{}, mae:{}'.format(mse, mae))
+        # Save original format files (for backward compatibility)
+        np.save(folder_path + 'metrics.npy', np.array([mae, mse, rmse, mape, mspe]))
+        np.save(folder_path + 'pred.npy', preds)
+        np.save(folder_path + 'true.npy', trues)
 
-        np.save(folder_path+'metrics.npy', np.array([mae, mse, rmse, mape, mspe]))
-        np.save(folder_path+'pred.npy', preds)
-        np.save(folder_path+'true.npy', trues)
+        # Generate comprehensive test visualizations and results
+        try:
+            from utils.test_visualization import (
+                plot_prediction_comparison, plot_comprehensive_metrics, 
+                save_test_results, generate_test_report
+            )
+            
+            dataset_name = self.config.data
+            print(f"\n📊 Generating comprehensive test results...")
+            
+            # Create visualization plots
+            print("  📈 Creating prediction comparison plots...")
+            plot_prediction_comparison(preds, trues, dataset_name, setting, 
+                                     output_dir="./test_plots", show_samples=5, 
+                                     pred_len=self.config.pred_len)
+            
+            print("  📊 Creating comprehensive metrics analysis...")
+            plot_comprehensive_metrics(preds, trues, dataset_name, setting, 
+                                     output_dir="./test_plots")
+            
+            # Save detailed results
+            print("  💾 Saving detailed test results...")
+            save_test_results(preds, trues, dataset_name, setting, 
+                            output_dir="./test_exports")
+            
+            # Generate comprehensive report
+            print("  📄 Generating test report...")
+            generate_test_report(dataset_name, setting, 
+                                folder_path, "./test_plots", "./test_exports")
+            
+            print(f"\n✅ Comprehensive test analysis completed!")
+            print(f"   📁 Test results: {folder_path}")
+            print(f"   📈 Visualizations: ./test_plots/")
+            print(f"   📊 Export files: ./test_exports/")
+            
+        except Exception as e:
+            print(f"⚠️  Error generating comprehensive results: {e}")
+            import traceback
+            traceback.print_exc()
 
-        return
+        return {
+            'preds': preds,
+            'trues': trues,
+            'basic_metrics': {'mae': mae, 'mse': mse, 'rmse': rmse, 'mape': mape, 'mspe': mspe},
+            'comprehensive_metrics': comp_metrics,
+            'results_path': folder_path
+        }
 
     def predict(self, setting, load=False):
         pred_data, pred_loader = self._get_data(flag='pred')
